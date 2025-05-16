@@ -6,6 +6,9 @@ To provide a clean, standardized input format for LLMs processing
 semi-structured texts (e.g. journals, config files), 
 focusing on semantic clarity rather than visual markup.
 
+Should generally close to python syntax rules.
+
+
 ## Syntax Rules
 0. Sections 
 <<Section name>>
