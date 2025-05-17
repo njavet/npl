@@ -1,45 +1,27 @@
 import pytest
 
 # project imports
-from mars.service.parsing import parse_text_to_llm_input
+from npl.formatter import raw_text_formatter
 
 
 def test_tabs_whitespaces():
-    sm = '  This\tis a  bad formatted system message.\n'
-    psm = parse_text_to_llm_input(sm)
-    assert psm == 'This is a bad formatted system message.'
+    t = '  command  uplink\t active! '
+    ft = raw_text_formatter(t)
+    assert ft == 'command uplink active!'
 
 
-def test_multiple_newlines():
-    sm = 'This \n\n\n  message \n\n uses \n\n\n\ntoo many newlines.\n'
-    psm = parse_text_to_llm_input(sm)
-    expected = 'This\n\nmessage\n\nuses\n\ntoo many newlines.'
-    assert psm == expected
+def test_newline_tabs_newline():
+    t = ' marv\n\t\n assembly \n\tcomplete'
+    ft = raw_text_formatter(t)
+    assert ft == 'marv assembly complete'
 
 
 def test_single_non_semantic_newlines():
-    sm = 'This \n  message\nuses \n\t\n\ntoo many newlines.\n'
-    psm = parse_text_to_llm_input(sm)
-    expected = 'This message uses\n\ntoo many newlines.'
-    assert psm == expected
+    t = 'without \n music, life\n\twould be a mistake.'
+    ft = raw_text_formatter(t)
+    assert ft == 'without music, life would be a mistake.'
 
 
-def test_bullet_point_list():
-    sm = 'Do:\n\n* format\n* test\n* repeat\n\nLater you should\ndo.\n'
-    psm = parse_text_to_llm_input(sm)
-    expected = 'Do:\n\n* format\n* test\n* repeat\n\nLater you should do.'
-    assert psm == expected
+def test_obsolete_newlines():
+    t = ''
 
-
-def test_trailing_bullet_point_list():
-    sm0 = 'Do:\n\n* format\n* test\n* repeat\n'
-    sm1 = 'Do:\n\n* format\n* test\n* repeat\n\n'
-    sm2 = 'Do:\n\n* format\n* test\n* repeat'
-
-    psm0 = parse_text_to_llm_input(sm0)
-    psm1 = parse_text_to_llm_input(sm1)
-    psm2 = parse_text_to_llm_input(sm2)
-    expected = 'Do:\n\n* format\n* test\n* repeat'
-    assert psm0 == expected
-    assert psm1 == expected
-    assert psm2 == expected
